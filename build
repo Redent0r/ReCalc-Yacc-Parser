@@ -1,0 +1,6 @@
+#!/bin/bash
+
+yacc -d recalc.y
+flex -I lexer.l
+gcc lex.yy.c y.tab.c -lfl
+a.out < tests/0.test
