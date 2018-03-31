@@ -1,6 +1,19 @@
 #!/bin/bash
 
-yacc -d recalc.y
+yacc -d -v recalc.y
 flex -I lexer.l
+
+rm a.out
 gcc lex.yy.c y.tab.c -lfl
+
 a.out < tests/0.test
+
+a.out < tests/1.test
+
+a.out < tests/2.test
+
+a.out < tests/3.test
+
+a.out < tests/4.test
+
+a.out < tests/5.test

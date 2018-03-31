@@ -2,5 +2,5 @@ program abc is
 begin
 string message;
 message = "I am a message";
-print message;
+print message . " lel";
 end

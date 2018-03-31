@@ -1,4 +1,4 @@
-program abc is
+program test1 is
 begin
 int a;
 a = 5;
