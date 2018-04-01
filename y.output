@@ -2,46 +2,46 @@
 
    1  program : PROGRAMnumber IDnumber ISnumber BEGINnumber body ENDnumber
 
-   2  body : statement SEMInumber body
-   3       | statement SEMInumber
+   2  body :
+   3       | body statement SEMInumber
 
    4  statement : print_statement
    5            | variable_declaration
    6            | assignment
 
-   7  assignment : IDnumber EQnumber r_value
+   7  assignment : IDnumber EQnumber expr
+   8             | IDnumber EQnumber STRINGnumber
 
-   8  r_value : STRINGnumber
-   9          | expr
+   9  print_statement : PRINTnumber print_argument
 
   10  expr : expr PLUSnumber t
   11       | expr MINUSnumber t
   12       | t
-  13       | IDnumber
-  14       | ICONSTnumber
 
-  15  t : t TIMESnumber f
-  16    | t DIVnumber f
-  17    | f
+  13  t : t TIMESnumber f
+  14    | t DIVnumber f
+  15    | f
 
-  18  f : IDnumber
-  19    | ICONSTnumber
-  20    | LPARENnumber expr RPARENnumber
+  16  f : IDnumber
+  17    | ICONSTnumber
+  18    | LPARENnumber expr RPARENnumber
 
-  21  variable_declaration : type var_list
+  19  variable_declaration : type var_list
 
-  22  var_list : IDnumber COMMAnumber var_list
-  23           | IDnumber
+  20  var_list :
+  21           | var_list IDnumber
+  22           | var_list IDnumber COMMAnumber
 
-  24  type : VARINTnumber
-  25       | VARSTRnumber
+  23  type : VARINTnumber
+  24       | VARSTRnumber
 
-  26  print_statement : PRINTnumber print_argument
-
-  27  print_argument : r_value print_argument
-  28                 | r_value
-  29                 | DOTnumber r_value print_argument
-  30                 | DOTnumber r_value
+  25  print_argument :
+  26                 | print_argument IDnumber
+  27                 | print_argument DOTnumber IDnumber
+  28                 | print_argument expr
+  29                 | print_argument DOTnumber expr
+  30                 | print_argument STRINGnumber
+  31                 | print_argument DOTnumber STRINGnumber
 
 state 0
 	$accept : . program $end  (0)
@@ -81,485 +81,434 @@ state 4
 
 state 5
 	program : PROGRAMnumber IDnumber ISnumber BEGINnumber . body ENDnumber  (1)
+	body : .  (2)
 
-	IDnumber  shift 6
-	PRINTnumber  shift 7
-	VARINTnumber  shift 8
-	VARSTRnumber  shift 9
-	.  error
+	.  reduce 2
 
-	body  goto 10
-	statement  goto 11
-	print_statement  goto 12
-	variable_declaration  goto 13
-	assignment  goto 14
-	type  goto 15
+	body  goto 6
 
 
 state 6
-	assignment : IDnumber . EQnumber r_value  (7)
+	program : PROGRAMnumber IDnumber ISnumber BEGINnumber body . ENDnumber  (1)
+	body : body . statement SEMInumber  (3)
 
-	EQnumber  shift 16
+	PRINTnumber  shift 7
+	ENDnumber  shift 8
+	VARINTnumber  shift 9
+	VARSTRnumber  shift 10
+	IDnumber  shift 11
 	.  error
+
+	type  goto 12
+	statement  goto 13
+	print_statement  goto 14
+	variable_declaration  goto 15
+	assignment  goto 16
 
 
 state 7
-	print_statement : PRINTnumber . print_argument  (26)
-
-	ICONSTnumber  shift 17
-	IDnumber  shift 18
-	DOTnumber  shift 19
-	LPARENnumber  shift 20
-	STRINGnumber  shift 21
-	.  error
-
-	r_value  goto 22
-	expr  goto 23
-	t  goto 24
-	f  goto 25
-	print_argument  goto 26
-
-
-state 8
-	type : VARINTnumber .  (24)
-
-	.  reduce 24
-
-
-state 9
-	type : VARSTRnumber .  (25)
+	print_statement : PRINTnumber . print_argument  (9)
+	print_argument : .  (25)
 
 	.  reduce 25
 
-
-state 10
-	program : PROGRAMnumber IDnumber ISnumber BEGINnumber body . ENDnumber  (1)
-
-	ENDnumber  shift 27
-	.  error
+	print_argument  goto 17
 
 
-state 11
-	body : statement . SEMInumber body  (2)
-	body : statement . SEMInumber  (3)
-
-	SEMInumber  shift 28
-	.  error
-
-
-state 12
-	statement : print_statement .  (4)
-
-	.  reduce 4
-
-
-state 13
-	statement : variable_declaration .  (5)
-
-	.  reduce 5
-
-
-state 14
-	statement : assignment .  (6)
-
-	.  reduce 6
-
-
-state 15
-	variable_declaration : type . var_list  (21)
-
-	IDnumber  shift 29
-	.  error
-
-	var_list  goto 30
-
-
-state 16
-	assignment : IDnumber EQnumber . r_value  (7)
-
-	ICONSTnumber  shift 17
-	IDnumber  shift 18
-	LPARENnumber  shift 20
-	STRINGnumber  shift 21
-	.  error
-
-	r_value  goto 31
-	expr  goto 23
-	t  goto 24
-	f  goto 25
-
-
-17: reduce/reduce conflict (reduce 14, reduce 19) on ICONSTnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on PLUSnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on MINUSnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on IDnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on DOTnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on SEMInumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on LPARENnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on RPARENnumber
-17: reduce/reduce conflict (reduce 14, reduce 19) on STRINGnumber
-state 17
-	expr : ICONSTnumber .  (14)
-	f : ICONSTnumber .  (19)
-
-	ICONSTnumber  reduce 14
-	PLUSnumber  reduce 14
-	MINUSnumber  reduce 14
-	TIMESnumber  reduce 19
-	DIVnumber  reduce 19
-	IDnumber  reduce 14
-	DOTnumber  reduce 14
-	SEMInumber  reduce 14
-	LPARENnumber  reduce 14
-	RPARENnumber  reduce 14
-	STRINGnumber  reduce 14
-
-
-18: reduce/reduce conflict (reduce 13, reduce 18) on ICONSTnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on PLUSnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on MINUSnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on IDnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on DOTnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on SEMInumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on LPARENnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on RPARENnumber
-18: reduce/reduce conflict (reduce 13, reduce 18) on STRINGnumber
-state 18
-	expr : IDnumber .  (13)
-	f : IDnumber .  (18)
-
-	ICONSTnumber  reduce 13
-	PLUSnumber  reduce 13
-	MINUSnumber  reduce 13
-	TIMESnumber  reduce 18
-	DIVnumber  reduce 18
-	IDnumber  reduce 13
-	DOTnumber  reduce 13
-	SEMInumber  reduce 13
-	LPARENnumber  reduce 13
-	RPARENnumber  reduce 13
-	STRINGnumber  reduce 13
-
-
-state 19
-	print_argument : DOTnumber . r_value print_argument  (29)
-	print_argument : DOTnumber . r_value  (30)
-
-	ICONSTnumber  shift 17
-	IDnumber  shift 18
-	LPARENnumber  shift 20
-	STRINGnumber  shift 21
-	.  error
-
-	r_value  goto 32
-	expr  goto 23
-	t  goto 24
-	f  goto 25
-
-
-state 20
-	f : LPARENnumber . expr RPARENnumber  (20)
-
-	ICONSTnumber  shift 17
-	IDnumber  shift 18
-	LPARENnumber  shift 20
-	.  error
-
-	expr  goto 33
-	t  goto 24
-	f  goto 25
-
-
-state 21
-	r_value : STRINGnumber .  (8)
-
-	.  reduce 8
-
-
-state 22
-	print_argument : r_value . print_argument  (27)
-	print_argument : r_value .  (28)
-
-	ICONSTnumber  shift 17
-	IDnumber  shift 18
-	DOTnumber  shift 19
-	LPARENnumber  shift 20
-	STRINGnumber  shift 21
-	SEMInumber  reduce 28
-
-	r_value  goto 22
-	expr  goto 23
-	t  goto 24
-	f  goto 25
-	print_argument  goto 34
-
-
-state 23
-	r_value : expr .  (9)
-	expr : expr . PLUSnumber t  (10)
-	expr : expr . MINUSnumber t  (11)
-
-	PLUSnumber  shift 35
-	MINUSnumber  shift 36
-	ICONSTnumber  reduce 9
-	IDnumber  reduce 9
-	DOTnumber  reduce 9
-	SEMInumber  reduce 9
-	LPARENnumber  reduce 9
-	STRINGnumber  reduce 9
-
-
-state 24
-	expr : t .  (12)
-	t : t . TIMESnumber f  (15)
-	t : t . DIVnumber f  (16)
-
-	TIMESnumber  shift 37
-	DIVnumber  shift 38
-	ICONSTnumber  reduce 12
-	PLUSnumber  reduce 12
-	MINUSnumber  reduce 12
-	IDnumber  reduce 12
-	DOTnumber  reduce 12
-	SEMInumber  reduce 12
-	LPARENnumber  reduce 12
-	RPARENnumber  reduce 12
-	STRINGnumber  reduce 12
-
-
-state 25
-	t : f .  (17)
-
-	.  reduce 17
-
-
-state 26
-	print_statement : PRINTnumber print_argument .  (26)
-
-	.  reduce 26
-
-
-state 27
+state 8
 	program : PROGRAMnumber IDnumber ISnumber BEGINnumber body ENDnumber .  (1)
 
 	.  reduce 1
 
 
+state 9
+	type : VARINTnumber .  (23)
+
+	.  reduce 23
+
+
+state 10
+	type : VARSTRnumber .  (24)
+
+	.  reduce 24
+
+
+state 11
+	assignment : IDnumber . EQnumber expr  (7)
+	assignment : IDnumber . EQnumber STRINGnumber  (8)
+
+	EQnumber  shift 18
+	.  error
+
+
+state 12
+	variable_declaration : type . var_list  (19)
+	var_list : .  (20)
+
+	.  reduce 20
+
+	var_list  goto 19
+
+
+state 13
+	body : body statement . SEMInumber  (3)
+
+	SEMInumber  shift 20
+	.  error
+
+
+state 14
+	statement : print_statement .  (4)
+
+	.  reduce 4
+
+
+state 15
+	statement : variable_declaration .  (5)
+
+	.  reduce 5
+
+
+state 16
+	statement : assignment .  (6)
+
+	.  reduce 6
+
+
+state 17
+	print_statement : PRINTnumber print_argument .  (9)
+	print_argument : print_argument . IDnumber  (26)
+	print_argument : print_argument . DOTnumber IDnumber  (27)
+	print_argument : print_argument . expr  (28)
+	print_argument : print_argument . DOTnumber expr  (29)
+	print_argument : print_argument . STRINGnumber  (30)
+	print_argument : print_argument . DOTnumber STRINGnumber  (31)
+
+	DOTnumber  shift 21
+	LPARENnumber  shift 22
+	STRINGnumber  shift 23
+	ICONSTnumber  shift 24
+	IDnumber  shift 25
+	SEMInumber  reduce 9
+
+	f  goto 26
+	t  goto 27
+	expr  goto 28
+
+
+state 18
+	assignment : IDnumber EQnumber . expr  (7)
+	assignment : IDnumber EQnumber . STRINGnumber  (8)
+
+	LPARENnumber  shift 22
+	STRINGnumber  shift 29
+	ICONSTnumber  shift 24
+	IDnumber  shift 30
+	.  error
+
+	f  goto 26
+	t  goto 27
+	expr  goto 31
+
+
+state 19
+	variable_declaration : type var_list .  (19)
+	var_list : var_list . IDnumber  (21)
+	var_list : var_list . IDnumber COMMAnumber  (22)
+
+	IDnumber  shift 32
+	SEMInumber  reduce 19
+
+
+state 20
+	body : body statement SEMInumber .  (3)
+
+	.  reduce 3
+
+
+state 21
+	print_argument : print_argument DOTnumber . IDnumber  (27)
+	print_argument : print_argument DOTnumber . expr  (29)
+	print_argument : print_argument DOTnumber . STRINGnumber  (31)
+
+	LPARENnumber  shift 22
+	STRINGnumber  shift 33
+	ICONSTnumber  shift 24
+	IDnumber  shift 34
+	.  error
+
+	f  goto 26
+	t  goto 27
+	expr  goto 35
+
+
+state 22
+	f : LPARENnumber . expr RPARENnumber  (18)
+
+	LPARENnumber  shift 22
+	ICONSTnumber  shift 24
+	IDnumber  shift 30
+	.  error
+
+	f  goto 26
+	t  goto 27
+	expr  goto 36
+
+
+state 23
+	print_argument : print_argument STRINGnumber .  (30)
+
+	.  reduce 30
+
+
+state 24
+	f : ICONSTnumber .  (17)
+
+	.  reduce 17
+
+
+25: reduce/reduce conflict (reduce 16, reduce 26) on DOTnumber
+25: reduce/reduce conflict (reduce 16, reduce 26) on SEMInumber
+25: reduce/reduce conflict (reduce 16, reduce 26) on LPARENnumber
+25: reduce/reduce conflict (reduce 16, reduce 26) on STRINGnumber
+25: reduce/reduce conflict (reduce 16, reduce 26) on ICONSTnumber
+25: reduce/reduce conflict (reduce 16, reduce 26) on IDnumber
+state 25
+	f : IDnumber .  (16)
+	print_argument : print_argument IDnumber .  (26)
+
+	.  reduce 16
+
+
+state 26
+	t : f .  (15)
+
+	.  reduce 15
+
+
+state 27
+	expr : t .  (12)
+	t : t . TIMESnumber f  (13)
+	t : t . DIVnumber f  (14)
+
+	TIMESnumber  shift 37
+	DIVnumber  shift 38
+	PLUSnumber  reduce 12
+	MINUSnumber  reduce 12
+	DOTnumber  reduce 12
+	SEMInumber  reduce 12
+	LPARENnumber  reduce 12
+	RPARENnumber  reduce 12
+	STRINGnumber  reduce 12
+	ICONSTnumber  reduce 12
+	IDnumber  reduce 12
+
+
 state 28
-	body : statement SEMInumber . body  (2)
-	body : statement SEMInumber .  (3)
+	expr : expr . PLUSnumber t  (10)
+	expr : expr . MINUSnumber t  (11)
+	print_argument : print_argument expr .  (28)
 
-	IDnumber  shift 6
-	PRINTnumber  shift 7
-	VARINTnumber  shift 8
-	VARSTRnumber  shift 9
-	ENDnumber  reduce 3
-
-	body  goto 39
-	statement  goto 11
-	print_statement  goto 12
-	variable_declaration  goto 13
-	assignment  goto 14
-	type  goto 15
+	PLUSnumber  shift 39
+	MINUSnumber  shift 40
+	DOTnumber  reduce 28
+	SEMInumber  reduce 28
+	LPARENnumber  reduce 28
+	STRINGnumber  reduce 28
+	ICONSTnumber  reduce 28
+	IDnumber  reduce 28
 
 
 state 29
-	var_list : IDnumber . COMMAnumber var_list  (22)
-	var_list : IDnumber .  (23)
+	assignment : IDnumber EQnumber STRINGnumber .  (8)
 
-	COMMAnumber  shift 40
-	SEMInumber  reduce 23
+	.  reduce 8
 
 
 state 30
-	variable_declaration : type var_list .  (21)
+	f : IDnumber .  (16)
 
-	.  reduce 21
+	.  reduce 16
 
 
 state 31
-	assignment : IDnumber EQnumber r_value .  (7)
+	assignment : IDnumber EQnumber expr .  (7)
+	expr : expr . PLUSnumber t  (10)
+	expr : expr . MINUSnumber t  (11)
 
-	.  reduce 7
+	PLUSnumber  shift 39
+	MINUSnumber  shift 40
+	SEMInumber  reduce 7
 
 
 state 32
-	print_argument : DOTnumber r_value . print_argument  (29)
-	print_argument : DOTnumber r_value .  (30)
+	var_list : var_list IDnumber .  (21)
+	var_list : var_list IDnumber . COMMAnumber  (22)
 
-	ICONSTnumber  shift 17
-	IDnumber  shift 18
-	DOTnumber  shift 19
-	LPARENnumber  shift 20
-	STRINGnumber  shift 21
-	SEMInumber  reduce 30
-
-	r_value  goto 22
-	expr  goto 23
-	t  goto 24
-	f  goto 25
-	print_argument  goto 41
+	COMMAnumber  shift 41
+	SEMInumber  reduce 21
+	IDnumber  reduce 21
 
 
 state 33
+	print_argument : print_argument DOTnumber STRINGnumber .  (31)
+
+	.  reduce 31
+
+
+34: reduce/reduce conflict (reduce 16, reduce 27) on DOTnumber
+34: reduce/reduce conflict (reduce 16, reduce 27) on SEMInumber
+34: reduce/reduce conflict (reduce 16, reduce 27) on LPARENnumber
+34: reduce/reduce conflict (reduce 16, reduce 27) on STRINGnumber
+34: reduce/reduce conflict (reduce 16, reduce 27) on ICONSTnumber
+34: reduce/reduce conflict (reduce 16, reduce 27) on IDnumber
+state 34
+	f : IDnumber .  (16)
+	print_argument : print_argument DOTnumber IDnumber .  (27)
+
+	.  reduce 16
+
+
+state 35
 	expr : expr . PLUSnumber t  (10)
 	expr : expr . MINUSnumber t  (11)
-	f : LPARENnumber expr . RPARENnumber  (20)
+	print_argument : print_argument DOTnumber expr .  (29)
 
-	PLUSnumber  shift 35
-	MINUSnumber  shift 36
+	PLUSnumber  shift 39
+	MINUSnumber  shift 40
+	DOTnumber  reduce 29
+	SEMInumber  reduce 29
+	LPARENnumber  reduce 29
+	STRINGnumber  reduce 29
+	ICONSTnumber  reduce 29
+	IDnumber  reduce 29
+
+
+state 36
+	expr : expr . PLUSnumber t  (10)
+	expr : expr . MINUSnumber t  (11)
+	f : LPARENnumber expr . RPARENnumber  (18)
+
+	PLUSnumber  shift 39
+	MINUSnumber  shift 40
 	RPARENnumber  shift 42
 	.  error
 
 
-state 34
-	print_argument : r_value print_argument .  (27)
-
-	.  reduce 27
-
-
-state 35
-	expr : expr PLUSnumber . t  (10)
-
-	ICONSTnumber  shift 43
-	IDnumber  shift 44
-	LPARENnumber  shift 20
-	.  error
-
-	t  goto 45
-	f  goto 25
-
-
-state 36
-	expr : expr MINUSnumber . t  (11)
-
-	ICONSTnumber  shift 43
-	IDnumber  shift 44
-	LPARENnumber  shift 20
-	.  error
-
-	t  goto 46
-	f  goto 25
-
-
 state 37
-	t : t TIMESnumber . f  (15)
+	t : t TIMESnumber . f  (13)
 
-	ICONSTnumber  shift 43
-	IDnumber  shift 44
-	LPARENnumber  shift 20
+	LPARENnumber  shift 22
+	ICONSTnumber  shift 24
+	IDnumber  shift 30
 	.  error
 
-	f  goto 47
+	f  goto 43
 
 
 state 38
-	t : t DIVnumber . f  (16)
+	t : t DIVnumber . f  (14)
 
-	ICONSTnumber  shift 43
-	IDnumber  shift 44
-	LPARENnumber  shift 20
+	LPARENnumber  shift 22
+	ICONSTnumber  shift 24
+	IDnumber  shift 30
 	.  error
 
-	f  goto 48
+	f  goto 44
 
 
 state 39
-	body : statement SEMInumber body .  (2)
+	expr : expr PLUSnumber . t  (10)
 
-	.  reduce 2
+	LPARENnumber  shift 22
+	ICONSTnumber  shift 24
+	IDnumber  shift 30
+	.  error
+
+	f  goto 26
+	t  goto 45
 
 
 state 40
-	var_list : IDnumber COMMAnumber . var_list  (22)
+	expr : expr MINUSnumber . t  (11)
 
-	IDnumber  shift 29
+	LPARENnumber  shift 22
+	ICONSTnumber  shift 24
+	IDnumber  shift 30
 	.  error
 
-	var_list  goto 49
+	f  goto 26
+	t  goto 46
 
 
 state 41
-	print_argument : DOTnumber r_value print_argument .  (29)
+	var_list : var_list IDnumber COMMAnumber .  (22)
 
-	.  reduce 29
+	.  reduce 22
 
 
 state 42
-	f : LPARENnumber expr RPARENnumber .  (20)
-
-	.  reduce 20
-
-
-state 43
-	f : ICONSTnumber .  (19)
-
-	.  reduce 19
-
-
-state 44
-	f : IDnumber .  (18)
+	f : LPARENnumber expr RPARENnumber .  (18)
 
 	.  reduce 18
 
 
+state 43
+	t : t TIMESnumber f .  (13)
+
+	.  reduce 13
+
+
+state 44
+	t : t DIVnumber f .  (14)
+
+	.  reduce 14
+
+
 state 45
 	expr : expr PLUSnumber t .  (10)
-	t : t . TIMESnumber f  (15)
-	t : t . DIVnumber f  (16)
+	t : t . TIMESnumber f  (13)
+	t : t . DIVnumber f  (14)
 
 	TIMESnumber  shift 37
 	DIVnumber  shift 38
-	ICONSTnumber  reduce 10
 	PLUSnumber  reduce 10
 	MINUSnumber  reduce 10
-	IDnumber  reduce 10
 	DOTnumber  reduce 10
 	SEMInumber  reduce 10
 	LPARENnumber  reduce 10
 	RPARENnumber  reduce 10
 	STRINGnumber  reduce 10
+	ICONSTnumber  reduce 10
+	IDnumber  reduce 10
 
 
 state 46
 	expr : expr MINUSnumber t .  (11)
-	t : t . TIMESnumber f  (15)
-	t : t . DIVnumber f  (16)
+	t : t . TIMESnumber f  (13)
+	t : t . DIVnumber f  (14)
 
 	TIMESnumber  shift 37
 	DIVnumber  shift 38
-	ICONSTnumber  reduce 11
 	PLUSnumber  reduce 11
 	MINUSnumber  reduce 11
-	IDnumber  reduce 11
 	DOTnumber  reduce 11
 	SEMInumber  reduce 11
 	LPARENnumber  reduce 11
 	RPARENnumber  reduce 11
 	STRINGnumber  reduce 11
+	ICONSTnumber  reduce 11
+	IDnumber  reduce 11
 
 
-state 47
-	t : t TIMESnumber f .  (15)
-
-	.  reduce 15
-
-
-state 48
-	t : t DIVnumber f .  (16)
-
-	.  reduce 16
+Rules never reduced:
+	print_argument : print_argument IDnumber  (26)
+	print_argument : print_argument DOTnumber IDnumber  (27)
 
 
-state 49
-	var_list : IDnumber COMMAnumber var_list .  (22)
-
-	.  reduce 22
+State 25 contains 6 reduce/reduce conflicts.
+State 34 contains 6 reduce/reduce conflicts.
 
 
-State 17 contains 9 reduce/reduce conflicts.
-State 18 contains 9 reduce/reduce conflicts.
-
-
-22 terminals, 14 nonterminals
-31 grammar rules, 50 states
+22 terminals, 13 nonterminals
+32 grammar rules, 47 states

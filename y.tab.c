@@ -21,10 +21,15 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 #include <string.h>
 
 #define MAX_MEM_ADRESS 2000
+#define MAX_STRING_LENGTH 2000
 #define MEM_ADRESS_NOT_FOUND -1
+#define TYPE_INT 0
+#define TYPE_STRING 1
 
-  int yyline=0;
-  int yycolumn=0;
+  int yyline=1;
+  int yycolumn=1;
+
+  int declaration_type=0;
 
   struct {
     char name[100];
@@ -36,19 +41,36 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
     }value;
   }memory[MAX_MEM_ADRESS];
 
-  getMemAdress(char * s)
-    {
-      int i = 0;
-      while (i < MAX_MEM_ADRESS)
-	{
-	  if(strcmp(s, memory[i].name) == 0) /* if names are equal */
-	    return i;
-	  ++i;
+  int getMemAdress(const char * s)
+  {
+    int i = 0;
+    while (i < MAX_MEM_ADRESS)
+      {
+	if(strcmp(s, memory[i].name) == 0) /* if names are equal */
+	  return i;
+	++i;
 	}
-      return MEM_ADRESS_NOT_FOUND;
-    }
+    return MEM_ADRESS_NOT_FOUND;
+  }
   
-#line 39 "recalc.y"
+  void initialize_var(const char * s, int type) 
+  {
+    int i = 0;
+    while (i < MAX_MEM_ADRESS)
+      {
+        if(memory[i].initialized == 0) /* found empty space                                                 */
+          {
+	    memory[i].type = type;
+	    strcpy(memory[i].name, s);
+	    memory[i].initialized = 1;
+	    printf("initialize_var: %s initialized\n", memory[i].name);
+	    return;
+	  }
+        ++i;
+      }
+  }
+  
+#line 68 "recalc.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -57,10 +79,10 @@ static const char yysccsid[] = "@(#)yaccpar	1.9 (Berkeley) 02/21/93";
 #define YYSTYPE_IS_DECLARED 1
 typedef union {
   int sv;
-  char * s
+  char * s;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 63 "y.tab.c"
+#line 85 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -93,92 +115,90 @@ typedef union {
 
 extern int YYPARSE_DECL();
 
-#define ICONSTnumber 257
-#define PLUSnumber 258
-#define MINUSnumber 259
-#define TIMESnumber 260
-#define DIVnumber 261
-#define IDnumber 262
-#define PRINTnumber 263
-#define PROGRAMnumber 264
-#define ISnumber 265
-#define BEGINnumber 266
-#define ENDnumber 267
-#define VARINTnumber 268
-#define VARSTRnumber 269
-#define DOTnumber 270
-#define SEMInumber 271
-#define LPARENnumber 272
-#define COMMAnumber 273
-#define RPARENnumber 274
-#define EQnumber 275
-#define STRINGnumber 276
+#define PLUSnumber 257
+#define MINUSnumber 258
+#define TIMESnumber 259
+#define DIVnumber 260
+#define PRINTnumber 261
+#define PROGRAMnumber 262
+#define ISnumber 263
+#define BEGINnumber 264
+#define ENDnumber 265
+#define VARINTnumber 266
+#define VARSTRnumber 267
+#define DOTnumber 268
+#define SEMInumber 269
+#define LPARENnumber 270
+#define COMMAnumber 271
+#define RPARENnumber 272
+#define EQnumber 273
+#define STRINGnumber 274
+#define ICONSTnumber 275
+#define IDnumber 276
 #define YYERRCODE 256
 static const short yylhs[] = {                           -1,
-    0,    1,    1,    2,    2,    2,    5,    6,    6,    7,
-    7,    7,    7,    7,    8,    8,    8,    9,    9,    9,
-    4,   11,   11,   10,   10,    3,   12,   12,   12,   12,
+    0,    5,    5,    6,    6,    6,    9,    9,    7,    3,
+    3,    3,    2,    2,    2,    1,    1,    1,    8,   11,
+   11,   11,    4,    4,   10,   10,   10,   10,   10,   10,
+   10,
 };
 static const short yylen[] = {                            2,
-    6,    3,    2,    1,    1,    1,    3,    1,    1,    3,
-    3,    1,    1,    1,    3,    3,    1,    1,    1,    3,
-    2,    3,    1,    1,    1,    2,    2,    1,    3,    2,
+    6,    0,    3,    1,    1,    1,    3,    3,    2,    3,
+    3,    1,    3,    3,    1,    1,    1,    3,    2,    0,
+    2,    3,    1,    1,    0,    2,    3,    2,    3,    2,
+    3,
 };
 static const short yydefred[] = {                         0,
-    0,    0,    0,    0,    0,    0,    0,   24,   25,    0,
-    0,    4,    5,    6,    0,    0,    0,    0,    0,    0,
-    8,    0,    0,    0,   17,   26,    1,    0,    0,   21,
-    7,    0,    0,   27,    0,    0,    0,    0,    2,    0,
-   29,   20,   19,   18,    0,    0,   15,   16,   22,
+    0,    0,    0,    0,    2,    0,   25,    1,   23,   24,
+    0,   20,    0,    4,    5,    6,    0,    0,    0,    3,
+    0,    0,   30,   17,   16,   15,    0,    0,    8,   16,
+    0,    0,   31,   16,    0,    0,    0,    0,    0,    0,
+   22,   18,   13,   14,    0,    0,
 };
 static const short yydgoto[] = {                          2,
-   10,   11,   12,   13,   14,   22,   23,   24,   25,   15,
-   30,   26,
+   26,   27,   28,   12,    6,   13,   14,   15,   16,   17,
+   19,
 };
-static const short yysindex[] = {                      -234,
- -237,    0, -227, -214, -180, -232, -239,    0,    0, -209,
- -208,    0,    0,    0, -197, -212,    0,    0, -212, -200,
-    0, -239, -173, -169,    0,    0,    0, -180, -192,    0,
-    0, -239, -181,    0, -178, -178, -178, -178,    0, -197,
-    0,    0,    0,    0, -169, -169,    0,    0,    0,
+static const short yysindex[] = {                      -254,
+ -260,    0, -240, -239,    0, -216,    0,    0,    0,    0,
+ -238,    0, -233,    0,    0,    0, -201, -194, -237,    0,
+ -191, -217,    0,    0,    0,    0, -256, -226,    0,    0,
+ -226, -203,    0,    0, -226, -220, -217, -217, -217, -217,
+    0,    0,    0,    0, -256, -256,
 };
 static const short yyrindex[] = {                         0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0, -257, -250,    0,    0,
-    0, -208, -196, -230,    0,    0,    0, -170, -201,    0,
-    0, -171,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0, -223, -203,    0,    0,    0,
+    0,    0,    0,    0,    0,    0, -215,    0, -183,    0,
+    0,    0,    0,    0,    0,    0, -257, -213,    0,    0,
+ -182, -262,    0,    0, -204,    0,    0,    0,    0,    0,
+    0,    0,    0,    0, -248, -228,
 };
 static const short yygindex[] = {                         0,
-   73,    0,    0,    0,    0,   71,   82,   60,   61,    0,
-   63,  -16,
+   -4,   38,  -16,    0,    0,    0,    0,    0,    0,    0,
+    0,
 };
-#define YYTABLESIZE 103
-static const short yytable[] = {                         14,
-   14,   14,   19,   19,   14,   34,   13,   13,   13,   18,
-   18,   13,   14,   14,   14,   41,   14,   17,   14,   13,
-   13,   13,   18,   13,    3,   13,   12,   12,   12,    1,
-   19,   12,   20,   10,   10,   10,   21,    4,   10,   12,
-   12,   12,   16,   12,   17,   12,   10,   10,   10,   18,
-   10,    5,   10,   11,   11,   11,   17,   27,   11,   20,
-    9,   18,   28,   21,   29,    9,   11,   11,   11,   23,
-   11,   20,   11,    9,    9,    9,   35,   36,   43,    9,
-   40,    6,    7,   44,   35,   36,   31,    8,    9,   32,
-   37,   38,   42,   20,   45,   46,    3,   47,   48,   30,
-   39,   33,   49,
+#define YYTABLESIZE 87
+static const short yytable[] = {                         12,
+   12,   31,   37,   38,   35,   36,   21,    1,   10,   10,
+   12,   12,   12,   21,   12,    3,   12,   12,   12,   10,
+   10,   10,    4,   10,    5,   10,   10,   10,   11,   11,
+   39,   40,   43,   44,   18,   20,   39,   40,   32,   11,
+   11,   11,    0,   11,    7,   11,   11,   11,    8,    9,
+   10,   42,   22,    9,   28,   28,   28,   24,   30,   11,
+   28,   28,   28,   29,   29,   29,   21,   41,   22,   29,
+   29,   29,   23,   24,   25,   22,   45,   46,   22,   29,
+   24,   30,   33,   24,   34,   19,    7,
 };
 static const short yycheck[] = {                        257,
-  258,  259,  260,  261,  262,   22,  257,  258,  259,  260,
-  261,  262,  270,  271,  272,   32,  274,  257,  276,  270,
-  271,  272,  262,  274,  262,  276,  257,  258,  259,  264,
-  270,  262,  272,  257,  258,  259,  276,  265,  262,  270,
-  271,  272,  275,  274,  257,  276,  270,  271,  272,  262,
-  274,  266,  276,  257,  258,  259,  257,  267,  262,  272,
-  257,  262,  271,  276,  262,  262,  270,  271,  272,  271,
-  274,  272,  276,  270,  271,  272,  258,  259,  257,  276,
-  273,  262,  263,  262,  258,  259,   16,  268,  269,   19,
-  260,  261,  274,  272,   35,   36,  267,   37,   38,  271,
-   28,   20,   40,
+  258,   18,  259,  260,   21,   22,  269,  262,  257,  258,
+  268,  269,  270,  276,  272,  276,  274,  275,  276,  268,
+  269,  270,  263,  272,  264,  274,  275,  276,  257,  258,
+  257,  258,   37,   38,  273,  269,  257,  258,  276,  268,
+  269,  270,   -1,  272,  261,  274,  275,  276,  265,  266,
+  267,  272,  270,  269,  268,  269,  270,  275,  276,  276,
+  274,  275,  276,  268,  269,  270,  268,  271,  270,  274,
+  275,  276,  274,  275,  276,  270,   39,   40,  270,  274,
+  275,  276,  274,  275,  276,  269,  269,
 };
 #define YYFINAL 2
 #ifndef YYDEBUG
@@ -194,28 +214,26 @@ static const char *yyname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"ICONSTnumber","PLUSnumber",
-"MINUSnumber","TIMESnumber","DIVnumber","IDnumber","PRINTnumber",
-"PROGRAMnumber","ISnumber","BEGINnumber","ENDnumber","VARINTnumber",
-"VARSTRnumber","DOTnumber","SEMInumber","LPARENnumber","COMMAnumber",
-"RPARENnumber","EQnumber","STRINGnumber",
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"PLUSnumber","MINUSnumber",
+"TIMESnumber","DIVnumber","PRINTnumber","PROGRAMnumber","ISnumber",
+"BEGINnumber","ENDnumber","VARINTnumber","VARSTRnumber","DOTnumber",
+"SEMInumber","LPARENnumber","COMMAnumber","RPARENnumber","EQnumber",
+"STRINGnumber","ICONSTnumber","IDnumber",
 };
 static const char *yyrule[] = {
 "$accept : program",
 "program : PROGRAMnumber IDnumber ISnumber BEGINnumber body ENDnumber",
-"body : statement SEMInumber body",
-"body : statement SEMInumber",
+"body :",
+"body : body statement SEMInumber",
 "statement : print_statement",
 "statement : variable_declaration",
 "statement : assignment",
-"assignment : IDnumber EQnumber r_value",
-"r_value : STRINGnumber",
-"r_value : expr",
+"assignment : IDnumber EQnumber expr",
+"assignment : IDnumber EQnumber STRINGnumber",
+"print_statement : PRINTnumber print_argument",
 "expr : expr PLUSnumber t",
 "expr : expr MINUSnumber t",
 "expr : t",
-"expr : IDnumber",
-"expr : ICONSTnumber",
 "t : t TIMESnumber f",
 "t : t DIVnumber f",
 "t : f",
@@ -223,15 +241,18 @@ static const char *yyrule[] = {
 "f : ICONSTnumber",
 "f : LPARENnumber expr RPARENnumber",
 "variable_declaration : type var_list",
-"var_list : IDnumber COMMAnumber var_list",
-"var_list : IDnumber",
+"var_list :",
+"var_list : var_list IDnumber",
+"var_list : var_list IDnumber COMMAnumber",
 "type : VARINTnumber",
 "type : VARSTRnumber",
-"print_statement : PRINTnumber print_argument",
-"print_argument : r_value print_argument",
-"print_argument : r_value",
-"print_argument : DOTnumber r_value print_argument",
-"print_argument : DOTnumber r_value",
+"print_argument :",
+"print_argument : print_argument IDnumber",
+"print_argument : print_argument DOTnumber IDnumber",
+"print_argument : print_argument expr",
+"print_argument : print_argument DOTnumber expr",
+"print_argument : print_argument STRINGnumber",
+"print_argument : print_argument DOTnumber STRINGnumber",
 
 };
 #endif
@@ -269,17 +290,14 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 125 "recalc.y"
+#line 194 "recalc.y"
 
 int main(void) {return yyparse();}
 
 int yyerror(char *s) {return fprintf(stderr, "YACC:%s\n",s);}
 
-int yywrap()
-{
-  return(1);
-}
-#line 282 "y.tab.c"
+int yywrap() {return(1);}
+#line 300 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -486,40 +504,105 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 62 "recalc.y"
-	{printf("%s was parsed succesfully\n", yystack.l_mark[-4]);}
+#line 83 "recalc.y"
+	{printf("%s was parsed succesfully\n", yystack.l_mark[-4].s);}
 break;
 case 7:
-#line 76 "recalc.y"
+#line 99 "recalc.y"
 	{
-  /*char * id = $1;*/
+  int memAdress = getMemAdress(yystack.l_mark[-2].s); 
+  /*printf("expr:%d\n");*/
+  memory[memAdress].value.i = yystack.l_mark[0].sv;
+  printf("assignment: %s = %d\n", yystack.l_mark[-2].s, memory[memAdress].value.i);
 }
 break;
-case 9:
-#line 82 "recalc.y"
-	{yyval = yystack.l_mark[0]; printf("r_value: %d\n", yyval);}
+case 10:
+#line 115 "recalc.y"
+	{yyval.sv = (yystack.l_mark[-2].sv + yystack.l_mark[0].sv);}
+break;
+case 11:
+#line 116 "recalc.y"
+	{yyval.sv = (yystack.l_mark[-2].sv - yystack.l_mark[0].sv);}
 break;
 case 12:
-#line 88 "recalc.y"
-	{yyval = yystack.l_mark[0]; printf("expr: %d\n", yyval);}
+#line 117 "recalc.y"
+	{yyval.sv = yystack.l_mark[0].sv; /*printf("expr: %d\n", $$);*/}
+break;
+case 13:
+#line 121 "recalc.y"
+	{yyval.sv = (yystack.l_mark[-2].sv * yystack.l_mark[0].sv);}
+break;
+case 14:
+#line 122 "recalc.y"
+	{yyval.sv = (yystack.l_mark[-2].sv / yystack.l_mark[0].sv);}
+break;
+case 15:
+#line 123 "recalc.y"
+	{yyval.sv = yystack.l_mark[0].sv; /*printf("t: %d\n", $$);*/}
+break;
+case 16:
+#line 128 "recalc.y"
+	{
+  int memAdress = getMemAdress(yystack.l_mark[0].s);
+  /*printf("memAdress=%d", memAdress);*/ 
+  yyval.sv = memory[memAdress].value.i;
+}
 break;
 case 17:
-#line 95 "recalc.y"
-	{yyval = yystack.l_mark[0]; printf("t: %d\n", yyval);}
+#line 133 "recalc.y"
+	{yyval.sv = yystack.l_mark[0].sv; /*printf("f: %d\n", $$);*/}
 break;
 case 18:
-#line 98 "recalc.y"
-	{/*$$ = $1; printf("int var detected: %d\n", $$);*/}
+#line 134 "recalc.y"
+	{yyval.sv = yystack.l_mark[-1].sv; /*printf("f: %d\n", $$);*/}
 break;
-case 19:
-#line 99 "recalc.y"
-	{yyval = yystack.l_mark[0]; printf("f: %d\n", yyval);}
+case 21:
+#line 143 "recalc.y"
+	{initialize_var(yystack.l_mark[0].s, declaration_type); printf("initialized: %s\n", yystack.l_mark[0].s);}
 break;
-case 20:
-#line 100 "recalc.y"
-	{}
+case 22:
+#line 144 "recalc.y"
+	{initialize_var(yystack.l_mark[-1].s, declaration_type); printf("initialized: %s\n", yystack.l_mark[-1].s);}
 break;
-#line 522 "y.tab.c"
+case 23:
+#line 148 "recalc.y"
+	{yyval.sv = TYPE_INT; declaration_type = TYPE_INT; /*printf("type: %s\n", $1);*/}
+break;
+case 24:
+#line 149 "recalc.y"
+	{yyval.sv = TYPE_STRING; declaration_type = TYPE_STRING; /*printf("type: %s\n", $$);*/}
+break;
+case 26:
+#line 161 "recalc.y"
+	{
+  int memAdress = getMemAdress(yystack.l_mark[0].s);
+  printf("memAdress: %d\n", memAdress);
+  if (memAdress == MEM_ADRESS_NOT_FOUND) 
+    {
+      printf("%s not initialized\n", yystack.l_mark[0].s);
+      exit(1);
+    }
+  else if (memory[memAdress].type == TYPE_INT)
+    {
+      int result = memory[memAdress].value.i;
+      printf("%d", result);
+    }
+  else if (memory[memAdress].type == TYPE_STRING)
+    {
+      const char * result = memory[memAdress].value.s;
+      printf("%s", result);
+    }
+}
+break;
+case 30:
+#line 188 "recalc.y"
+	{printf("%s", yystack.l_mark[0].s);}
+break;
+case 31:
+#line 190 "recalc.y"
+	{printf("%s", yystack.l_mark[0].s);}
+break;
+#line 605 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

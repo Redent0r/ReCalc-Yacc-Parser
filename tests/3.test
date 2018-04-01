@@ -1,6 +1,9 @@
 program abc is
 begin
 string message;
+int a;
+a = (8);
 message = "I am a message";
 print message . " lel";
+print (a + (4 * 5)) . " hola";
 end

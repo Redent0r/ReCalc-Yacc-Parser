@@ -1,0 +1,8 @@
+program mytest is
+begin
+int a;
+a = 5 + 7 * 5;
+print(5 + (3 * 8));
+print "hola" . " mi amol";
+print a;
+end
