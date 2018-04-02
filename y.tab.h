@@ -27,6 +27,13 @@
 typedef union {
   int sv;
   char * s;
+  struct {
+    int type;
+    union {
+      int sv;
+      char * s;
+    }val;
+  }bi;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;

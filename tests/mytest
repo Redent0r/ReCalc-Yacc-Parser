@@ -1,8 +1,13 @@
 program mytest is
 begin
 int a;
-a = 5 + 7 * 5;
-print(5 + (3 * 8));
-print "hola" . " mi amol";
-print a;
+a = (5 + 2) * 3;
+string b;
+a = a div 1;
+b = "hola";
+print "a=" . a;
+print "literal";
+print a . b;
+print (5+7);
+print b;
 end

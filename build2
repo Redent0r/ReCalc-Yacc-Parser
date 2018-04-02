@@ -1,0 +1,14 @@
+#!/bin/bash
+proj2_linprog < tests/mytest
+
+#a.out < tests/0.test                                                         
+
+proj2_linprog < tests/1.test
+
+#a.out < tests/2.test                                                         
+
+#a.out < tests/3.test                                                         
+
+#a.out < tests/4.test                                                         
+
+#a.out < tests/5.test

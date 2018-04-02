@@ -1,0 +1,14 @@
+My job is to test the print function. Here is a int: 55 and the value of var a: 5
+The sum of 10 and 2 is 12
+I am a message lel
+28 hola
+-55
+10
+20
+Duplicate declaration on line 10.
+Referencing an uninitialized variable on line 4. 
+Type error on line 5.
+Dividing by zero on line 3.
+-55
+10
+Referencing an undeclared variable on line 9. 

@@ -1,21 +1,49 @@
 #!/bin/bash
 
-yacc -d -v recalc.y
+yacc -d recalc.y
 flex -I lexer.l
 
 rm a.out
 gcc lex.yy.c y.tab.c -lfl
 
-a.out < tests/mytest
+rm my_tests
+rm his_tests
 
-#a.out < tests/0.test
+echo running tests
+for i in 1 2 3 4 5 6 7 8
+do
+#echo tests/$i.test
+(a.out < tests/$i.test) >> my_tests
+#a.out < tests/$i.test
+#echo -------------------
+(proj2_linprog < tests/$i.test) >> his_tests
+#proj2_linprog < tests/$i.test
+#echo 
+done
 
-#a.out < tests/1.test
+rm my_errors
+rm his_errors
 
-#a.out < tests/2.test
+echo running errors
+for i in 1 2 3 4
+do
+#echo tests/$i.error
+(a.out < tests/$i.error) >> my_errors
+#a.out < tests/$i.error
+#echo -------------------
+(proj2_linprog < tests/$i.error) >> his_errors
+#proj2_linprog < tests/$i.error
+#echo 
+done
 
-#a.out < tests/3.test
+rm my_custom
+rm his_custom
 
-#a.out < tests/4.test
+echo running custom
+(a.out < tests/mytest) >> my_custom
+(proj2_linprog < tests/mytest) >> his_custom
 
-#a.out < tests/5.test
+#diff my_tests his_tests
+#diff my_errors his_errors
+
+diff -u my_custom his_custom
