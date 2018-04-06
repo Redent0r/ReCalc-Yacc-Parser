@@ -3,3 +3,8 @@
 *.exe
 *.tab.c
 *.tab.h
+*.yy.c
+his_errors
+my_errors
+his_tests
+my_tests
